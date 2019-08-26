@@ -32,7 +32,7 @@ class Resize(object):
 
 class VideoFolder(Dataset):
     def __init__(self, videos_csv, chunk_size, step_size=None, stride=1, transform=None):
-        self.videos = open(videos_csv, "r").readlines()
+        self.videos_csv = open(videos_csv, "r").readlines()
         self.chunk_size = chunk_size
         self.step_size = step_size if step_size else chunk_size
         self.stride = stride
@@ -44,7 +44,7 @@ class VideoFolder(Dataset):
         
         video_id = 0
         
-        for line in self.videos:
+        for line in self.videos_csv:
             video_path, class_name = line.strip("\n").split(",")
             
             if class_name not in self.classes.values():
