@@ -31,12 +31,13 @@ class Resize(object):
         return F.interpolate(data, size=self.size, mode='bilinear')
 
 class VideoFolder(Dataset):
-    def __init__(self, videos_csv, chunk_size, step_size=None, stride=1, transform=None):
+    def __init__(self, videos_csv, base_dir, chunk_size, step_size=None, stride=1, transform=None):
         self.videos_csv = open(videos_csv, "r").readlines()
         self.chunk_size = chunk_size
         self.step_size = step_size if step_size else chunk_size
         self.stride = stride
         self.transform = transform
+        self.base_dir = base_dir
         
         self.videos = []
         self.chunks = []
@@ -46,6 +47,7 @@ class VideoFolder(Dataset):
         
         for line in self.videos_csv:
             video_path, class_name = line.strip("\n").split(",")
+            video_path = os.path.join(self.base_dir, video_path)
             
             if class_name not in self.classes.values():
                 self.classes[len(self.classes.keys())] = class_name
