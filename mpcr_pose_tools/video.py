@@ -31,8 +31,8 @@ class Resize(object):
         return F.interpolate(data, size=self.size, mode='bilinear')
 
 class VideoFolder(Dataset):
-    def __init__(self, video_dir, chunk_size, step_size=None, stride=1, transform=None):
-        self.video_dir = video_dir
+    def __init__(self, videos_csv, chunk_size, step_size=None, stride=1, transform=None):
+        self.videos = open(videos_csv, "r").readlines()
         self.chunk_size = chunk_size
         self.step_size = step_size if step_size else chunk_size
         self.stride = stride
@@ -44,23 +44,20 @@ class VideoFolder(Dataset):
         
         video_id = 0
         
-        folders = [os.path.join(self.video_dir, folder) for folder in os.listdir(self.video_dir)]
-        folders = filter(os.path.isdir, folders)
-        for label, folder in enumerate(folders):
-            self.classes[label] = os.path.basename(folder)
+        for line in self.videos:
+            video_path, class_name = line.strip("\n").split(",")
             
-            files = [os.path.join(folder, file) for file in os.listdir(folder)]
-            files = filter(os.path.isfile, files)
-            for file in files:
-                
-                video = self.load_video(file)
-                self.videos.append(video)
-                
-                for chunk_start in range(0, len(video), self.step_size * self.stride):
-                    chunk_info = (video_id, chunk_start, label)
-                    self.chunks.append(chunk_info)
-                    
-                video_id += 1
+            if class_name not in self.classes.values():
+                self.classes[len(self.classes.keys())] = class_name
+               
+            video = self.load_video(video_path)
+            self.videos.append(video)
+            
+            for chunk_start in range(0, len(video), self.step_size * self.stride):
+                chunk_info = (video_id, chunk_start, label)
+                self.chunks.append(chunk_info)
+
+            video_id += 1
 
 
     def __len__(self):
