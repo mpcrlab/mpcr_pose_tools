@@ -49,14 +49,14 @@ class VideoFolder(Dataset):
             video_path, class_name = line.strip("\n").split(",")
             video_path = os.path.join(self.base_dir, video_path)
             
-            if class_name not in self.classes.values():
-                self.classes[len(self.classes.keys())] = class_name
+            if class_name not in self.classes.keys():
+                self.classes[class_name] = len(self.classes.keys())
                
             video = self.load_video(video_path)
             self.videos.append(video)
             
             for chunk_start in range(0, len(video), self.step_size * self.stride):
-                chunk_info = (video_id, chunk_start, label)
+                chunk_info = (video_id, chunk_start, self.classes[class_name])
                 self.chunks.append(chunk_info)
 
             video_id += 1
