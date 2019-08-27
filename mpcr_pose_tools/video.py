@@ -69,7 +69,7 @@ class VideoFolder(Dataset):
         return pims.Video(path)
                            
     def get_frames_from_video(self, video_id, chunk_start):
-        video = self.videos[video_id]
+        video = self.videos[video_id].replace('.mp4', '.avi')
         video = self.load_video(video)
         frames = video[chunk_start : min(len(video) - 1, chunk_start + (self.chunk_size * self.stride)) : self.stride]
         tensor = torch.tensor(np.array(frames), dtype=torch.float)
