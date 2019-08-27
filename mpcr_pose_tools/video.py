@@ -52,7 +52,7 @@ class VideoFolder(Dataset):
             if class_name not in self.classes.keys():
                 self.classes[class_name] = len(self.classes.keys())
                
-            
+            video = self.load_video(video_path.replace('.mp4', '.avi'))
             self.videos.append(video_path)
             
             for chunk_start in range(0, len(video), self.step_size * self.stride):
@@ -70,7 +70,6 @@ class VideoFolder(Dataset):
                            
     def get_frames_from_video(self, video_id, chunk_start):
         video = self.videos[video_id].replace('.mp4', '.avi')
-        print(video)
         video = self.load_video(video)
         frames = video[chunk_start : min(len(video) - 1, chunk_start + (self.chunk_size * self.stride)) : self.stride]
         tensor = torch.tensor(np.array(frames), dtype=torch.float)
