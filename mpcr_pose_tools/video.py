@@ -52,7 +52,7 @@ class VideoFolder(Dataset):
             if class_name not in self.classes.keys():
                 self.classes[class_name] = len(self.classes.keys())
                
-            video = self.load_video(video_path.replace('.mp4', '.avi'))
+            video = self.load_video(video_path)
             self.videos.append(video_path)
             
             for chunk_start in range(0, len(video), self.step_size * self.stride):
