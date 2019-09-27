@@ -71,10 +71,9 @@ class VideoFolder(Dataset):
     def get_frames_from_video(self, video_id, chunk_start):
         video = self.videos[video_id]
         video = self.load_video(video)
-        frames = video[chunk_start : min(len(video) - 1, chunk_start + (self.chunk_size * self.stride)) : self.stride]
+        frames = video[chunk_start : min(len(video), chunk_start + (self.chunk_size * self.stride)) : self.stride]
         tensor = torch.tensor(np.array(frames), dtype=torch.float)
         
-        print(tensor.shape, video_id, chunk_start)
         if tensor.shape[0] != self.chunk_size:
             padded_tensor = torch.zeros((self.chunk_size, tensor.shape[1], tensor.shape[2], tensor.shape[3]))
             padded_tensor[:tensor.shape[0],:,:,:] = tensor
