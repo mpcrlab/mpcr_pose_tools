@@ -58,7 +58,10 @@ class CoordsDataset(Dataset):
         return torch.tensor(data), label
 
     def get_coords(self, coord_path):
-        coords = np.load(coord_path)['pose']
+        coords_array = np.load(coord_path)
+        coords_body = coords_array['pose']
+        coords_face = coords_array['face']
+        coords = np.concatenate((coords_body, coords_face), axis=1)
 
         num_people = coords.shape[0]
         num_keypoints = coords.shape[1]
@@ -122,7 +125,7 @@ def test_nn(data_dir):
     dataset = CoordsDataset(data_dir)
     trainloader, valloader, testloader = get_train_val_test(dataset)
 
-    model = RNN(75, 100, 2).cuda()
+    model = RNN(75 + 210, 100, 2).cuda()
     optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
     for epoch in range(30):
         loss, acc = train_epoch(model, trainloader, optimizer)
@@ -134,7 +137,7 @@ def test_movement(data_dir):
     std_devs = []
     labels = []
     for segment, label in dataset:
-        segment = segment.view(-1, 25, 3)
+        segment = segment.view(-1, 25 + 70, 3)
         mean = segment.mean(dim=[0,1]).numpy()
         std_dev = segment.std(dim=[0,1]).numpy()
         std_devs.append(std_dev)
